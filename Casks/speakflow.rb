@@ -1,6 +1,6 @@
 cask "speakflow" do
-  version "0.1.0"
-  sha256 "27db3010c407c4e23cd7b9083a7c089c998b2d6b3b71843c04c0f04e23eacc4f"
+  version "0.1.1"
+  sha256 "85dc55e5dcde31a9a81ab49666ea9bd7bc5d1e0da365c6ad45453b4101f4863d"
 
   url "https://github.com/Vismay299/speakflow/releases/download/v#{version}/SpeakFlow-#{version}.dmg"
   name "SpeakFlow"
@@ -15,7 +15,7 @@ cask "speakflow" do
   caveats <<~EOS
     SpeakFlow requires the mlx-whisper Python package for transcription.
     Install it with:
-      pip install mlx-whisper
+      pip3 install mlx-whisper
 
     On first launch, the app will download the whisper-large-v3-turbo
     model (~800MB) and cache it locally. Subsequent launches are instant.
