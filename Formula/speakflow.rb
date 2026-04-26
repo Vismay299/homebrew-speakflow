@@ -10,8 +10,8 @@ class Speakflow < Formula
   depends_on "python@3.12"
 
   def install
-    app_source = Dir["SpeakFlow.app"].first
-    raise "SpeakFlow.app not found in release artifact" unless app_source
+    app_source = buildpath/"SpeakFlow.app"
+    raise "SpeakFlow.app not found in release artifact" unless app_source.exist?
 
     app_target = prefix/"SpeakFlow.app"
     cp_r app_source, app_target
