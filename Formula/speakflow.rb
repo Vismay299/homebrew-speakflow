@@ -28,15 +28,36 @@ class Speakflow < Formula
       Dir.rmdir(mountpoint) if Dir.exist?(mountpoint)
     end
 
-    python = Formula["python@3.12"].opt_libexec/"bin/python3"
+    brew_python = Formula["python@3.12"].opt_libexec/"bin/python3"
 
     (bin/"speakflow").write <<~EOS
       #!/bin/bash
       set -euo pipefail
+
+      bootstrap_runtime() {
+        local candidates=(
+          "#{brew_python}"
+          "$(command -v python3 || true)"
+        )
+
+        for candidate in "${candidates[@]}"; do
+          [ -n "$candidate" ] || continue
+          [ -x "$candidate" ] || continue
+
+          rm -rf "#{libexec}"
+          if "$candidate" -m venv "#{libexec}"; then
+            "#{libexec}/bin/pip" install --upgrade pip
+            "#{libexec}/bin/pip" install mlx-whisper
+            return 0
+          fi
+        done
+
+        echo "SpeakFlow could not create a Python runtime automatically." >&2
+        return 1
+      }
+
       if [ ! -x "#{libexec}/bin/python3" ]; then
-        "#{python}" -m venv "#{libexec}"
-        "#{libexec}/bin/pip" install --upgrade pip
-        "#{libexec}/bin/pip" install mlx-whisper
+        bootstrap_runtime
       fi
       export SPEAKFLOW_PYTHON="#{libexec}/bin/python3"
       open "#{app_target}"
