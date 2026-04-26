@@ -37,6 +37,8 @@ class Speakflow < Formula
       bootstrap_runtime() {
         local candidates=(
           "#{brew_python}"
+          "/usr/local/bin/python3"
+          "/usr/bin/python3"
           "$(command -v python3 || true)"
         )
 
@@ -66,11 +68,12 @@ class Speakflow < Formula
 
   def caveats
     <<~EOS
-      SpeakFlow uses a Brew-managed Python runtime at:
+      SpeakFlow stores its Python runtime at:
         #{libexec}/bin/python3
 
       On first launch, the `speakflow` command creates a private virtualenv and
-      installs `mlx-whisper` automatically.
+      installs `mlx-whisper` automatically. It prefers Homebrew Python and
+      falls back to a working system Python if needed.
 
       Launch SpeakFlow with:
         speakflow
