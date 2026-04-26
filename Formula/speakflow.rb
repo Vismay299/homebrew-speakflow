@@ -1,8 +1,10 @@
+require "tmpdir"
+
 class Speakflow < Formula
   desc "Fully local push-to-talk dictation app for Apple Silicon Macs"
   homepage "https://github.com/Vismay299/speakflow"
-  url "https://github.com/Vismay299/speakflow/releases/download/v0.1.2/SpeakFlow-0.1.2.tar.gz"
-  sha256 "f71c2dfd555912e4dc138a7ee6721b1ffe82b612b7db0b98c6fd2509811335aa"
+  url "https://github.com/Vismay299/speakflow/releases/download/v0.1.2/SpeakFlow-0.1.2.dmg"
+  sha256 "ed7a531a5f084e2145fc58f7fe5ed07ca9486bc3a6fd8f339cd19353eae8132d"
   license "MIT"
 
   depends_on arch: :arm64
@@ -10,11 +12,21 @@ class Speakflow < Formula
   depends_on "python@3.12"
 
   def install
-    app_source = buildpath.glob("**/SpeakFlow.app").first
-    raise "SpeakFlow.app not found in release artifact" unless app_source
-
     app_target = prefix/"SpeakFlow.app"
-    cp_r app_source, app_target
+    dmg_path = buildpath.glob("*.dmg").first
+    raise "SpeakFlow.dmg not found in release artifact" unless dmg_path
+
+    mountpoint = Dir.mktmpdir("speakflow")
+    begin
+      system "/usr/bin/hdiutil", "attach", dmg_path, "-nobrowse", "-readonly", "-mountpoint", mountpoint
+      app_source = Pathname.new("#{mountpoint}/SpeakFlow.app")
+      raise "SpeakFlow.app not found in mounted DMG" unless app_source.exist?
+
+      cp_r app_source, app_target
+    ensure
+      system "/usr/bin/hdiutil", "detach", mountpoint
+      Dir.rmdir(mountpoint) if Dir.exist?(mountpoint)
+    end
 
     python = Formula["python@3.12"].opt_bin/"python3"
 
