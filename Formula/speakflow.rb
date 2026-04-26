@@ -28,7 +28,7 @@ class Speakflow < Formula
       Dir.rmdir(mountpoint) if Dir.exist?(mountpoint)
     end
 
-    python = Formula["python@3.12"].opt_bin/"python3"
+    python = Formula["python@3.12"].opt_libexec/"bin/python3"
 
     (bin/"speakflow").write <<~EOS
       #!/bin/bash
