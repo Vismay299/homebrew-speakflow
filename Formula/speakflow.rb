@@ -13,8 +13,8 @@ class Speakflow < Formula
 
   def install
     app_target = prefix/"SpeakFlow.app"
-    dmg_path = buildpath.glob("*.dmg").first
-    raise "SpeakFlow.dmg not found in release artifact" unless dmg_path
+    dmg_path = cached_download
+    raise "SpeakFlow.dmg not found in release artifact" unless dmg_path.exist?
 
     mountpoint = Dir.mktmpdir("speakflow")
     begin
